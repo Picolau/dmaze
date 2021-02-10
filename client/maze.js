@@ -71,11 +71,24 @@ class Maze {
     }
   }
 
-  has_walls(cell_from, cell_to) {
+  has_walls(pos_from, pos_to) {
+    let row_from = pos_from.row;
+    let col_from = pos_from.col;
+
+    let row_to = pos_to.row;
+    let col_to = pos_to.col;
+
+    if (row_from == row_to && col_from == col_to)
+      return false;
+
+    let cell_from = this.get_cell(row_from, col_from);
+    let cell_to = this.get_cell(row_to, col_to);
+
     if (!cell_to)
       return true;
 
     let pos = cell_from.where_is(cell_to); // result is top/bot/right/left
+
     return cell_from.walls[pos];
   }
 }

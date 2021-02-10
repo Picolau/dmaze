@@ -53,7 +53,8 @@ function setup() {
 
   my_socket.on('client_move_player', (player_that_moved) => {
     if (player_that_moved.id == my_id) {
-      my_player.update_pos(player_that_moved.pos)
+      // my_player.update_pos(player_that_moved.pos)
+      // already done on client side...
     } else {
       let id = player_that_moved.id;
       let client_player_to_move = all_players[id];
@@ -131,5 +132,15 @@ function keyPressed() {
     maze.paint_player_wall(pos, 'right');
   }
 
+  handle_player_move(pos_to_move);
   my_socket.emit('client_move_player', pos_to_move);
+}
+
+function handle_player_move(pos_to_move) {
+  let can_move = !maze.has_walls(my_player.pos, pos_to_move);
+
+  if (can_move) {
+    my_player.update_pos(pos_to_move);
+    my_socket.emit('client_move_player', pos_to_move);
+  }
 }
