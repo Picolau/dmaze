@@ -11,7 +11,7 @@ class Maze {
     this.cells_with_player_walls = [];
   }
 
-  paint_player_wall(pos, wall) {
+  handle_place_player_wall(pos, wall) {
     let current_cell = this.get_cell(pos.row, pos.col);
     let other_cell = null;
     let other_wall = null;
@@ -35,6 +35,11 @@ class Maze {
       other_cell.toggle_player_wall(other_wall);
       this.cells_with_player_walls.push(current_cell);
     }
+  }
+
+  handle_place_flag(pos) {
+    let current_cell = this.get_cell(pos.row, pos.col);
+    current_cell.toggle_player_flag();
   }
 
   update_cell(my_cell, server_cell) {
@@ -68,6 +73,7 @@ class Maze {
     // draw cells
     for (let idx = 0;idx < this.cells.length;idx++) {
       this.cells[idx].show();
+      this.cells[idx].show_player_flag(this.player.color);
     }
   }
 

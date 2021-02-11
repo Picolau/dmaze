@@ -17,6 +17,7 @@ const KEY_W = 87;
 const KEY_A = 65;
 const KEY_S = 83;
 const KEY_D = 68;
+const KEY_E = 69;
 
 let maze;
 let my_id, my_player;
@@ -123,13 +124,17 @@ function keyPressed() {
   }
 
   if (keyCode === KEY_W){
-    maze.paint_player_wall(pos, 'top');
+    maze.handle_place_player_wall(pos, 'top');
   } else if (keyCode === KEY_A){
-    maze.paint_player_wall(pos, 'left');
+    maze.handle_place_player_wall(pos, 'left');
   } else if (keyCode === KEY_S){
-    maze.paint_player_wall(pos, 'bot');
+    maze.handle_place_player_wall(pos, 'bot');
   } else if (keyCode === KEY_D){
-    maze.paint_player_wall(pos, 'right');
+    maze.handle_place_player_wall(pos, 'right');
+  }
+
+  if (keyCode === KEY_E) {
+    maze.handle_place_flag(pos);
   }
 
   handle_player_move(pos_to_move);

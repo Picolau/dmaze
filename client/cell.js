@@ -20,10 +20,15 @@ class Cell {
     this.is_pod_cell = false;
 
     this.player_walls = {top: false, bot: false, left: false, right: false};
+    this.player_flag = false;
   }
 
   toggle_player_wall(wall) {
     this.player_walls[wall] = !this.player_walls[wall];
+  }
+
+  toggle_player_flag() {
+    this.player_flag = !this.player_flag;
   }
 
   where_is(other_cell) {
@@ -75,6 +80,22 @@ class Cell {
     }
     if (this.player_walls.left) {
       line(x, y + MAZE_SQUARE_SIZE, x, y);
+    }
+  }
+
+  show_player_flag(color) {
+    if (this.player_flag) {
+      let x = (this.col * MAZE_SQUARE_SIZE) + (MAZE_SQUARE_SIZE / 2);
+      let y = (this.row * MAZE_SQUARE_SIZE) + (MAZE_SQUARE_SIZE / 2);
+
+      stroke(color.r,color.g,color.b,200);
+      strokeWeight(0.3);
+      /* body */
+      fill(color.r,color.g,color.b,145);
+      ellipse(x, y, 4, 4);
+
+      /* return stroke weight to draw maze */
+      strokeWeight(1);
     }
   }
 }
