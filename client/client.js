@@ -87,7 +87,7 @@ function update_screen() {
   translateVector.lerp(my_player.draw_pos, 0.05);
 
   translate(width / 2, height / 2);
-  scale(12);
+  scale(7);
   translate(-translateVector.x, -translateVector.y);
 }
 
