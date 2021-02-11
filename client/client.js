@@ -26,6 +26,7 @@ let initialized = false;
 let all_players = {};
 let my_socket;
 let translateVector;
+let maze_scale = 7
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -87,7 +88,7 @@ function update_screen() {
   translateVector.lerp(my_player.draw_pos, 0.05);
 
   translate(width / 2, height / 2);
-  scale(7);
+  scale(maze_scale);
   translate(-translateVector.x, -translateVector.y);
 }
 
@@ -147,5 +148,9 @@ function handle_player_move(pos_to_move) {
   if (can_move) {
     my_player.update_pos(pos_to_move);
     my_socket.emit('client_move_player', pos_to_move);
+    
+    if (pos_to_move.row == 0 && pos_to_move.col == 0) {
+      maze_scale = 1;
+    }
   }
 }
