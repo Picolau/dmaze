@@ -17,11 +17,12 @@ class Maze {
     this.pod_end = {row: pod_end_row, col: pod_end_col};
 
     this.cells = [];
+    //this.deadend_cells = [];
     
     this.build_complete = false;
 
     this.init_cells();
-    this.init_discoverers_cells();
+    this.init_discoverer_cell();
     this.build_maze();
   }
 
@@ -34,38 +35,51 @@ class Maze {
   build_maze() {
     while (!this.build_complete) {
       this.build_complete = true;
+      this.discoverer_cell.visited = true;
 
       let next_cell = this.select_next_cell();
       
       if (next_cell) {
         this.build_complete = false;
-        this.stack.push(this.discoverer_cell);
-        this.discoverer_cell.visited = true;
 
-        let pos_next_cell = this.discoverer_cell.where_is(next_cell);
+        // break the walls
+        this.break_wall(this.discoverer_cell, next_cell);
 
-        if (pos_next_cell == 'top') {
-          this.discoverer_cell.walls.top = false;
-          next_cell.walls.bot = false;
-        } else if (pos_next_cell == 'bot') {
-          this.discoverer_cell.walls.bot = false;
-          next_cell.walls.top = false;
-        } else if (pos_next_cell == 'left') {
-          this.discoverer_cell.walls.left = false;
-          next_cell.walls.right = false;
-        } else if (pos_next_cell == 'right') {
-          this.discoverer_cell.walls.right = false;
-          next_cell.walls.left = false;
-        }
+        // set new discoverer cell
+        next_cell.path_size = this.discoverer_cell.path_size + 1;
+        next_cell.ancestral = this.discoverer_cell;
 
         this.discoverer_cell = next_cell;
       } else {
-        this.discoverer_cell.visited = true;
-        this.discoverer_cell = this.stack.pop();
+        if (this.discoverer_cell.walls_count() == 3) {
+          this.discoverer_cell.is_deadend = true;
+          //this.deadend_cells.push(this.discoverer_cell);
+        }
 
-        if (this.stack.length)
+        this.discoverer_cell = this.discoverer_cell.ancestral;
+
+        if (this.discoverer_cell)
           this.build_complete = false;
       }
+    }
+
+    //console.log(this.deadend_cells.length);
+  }
+
+  break_wall(cell1, cell2) {
+    let relative_pos = cell1.where_is(cell2);
+    if (relative_pos == 'top') {
+      cell1.walls.top = false;
+      cell2.walls.bot = false;
+    } else if (relative_pos == 'bot') {
+      cell1.walls.bot = false;
+      cell2.walls.top = false;
+    } else if (relative_pos == 'left') {
+      cell1.walls.left = false;
+      cell2.walls.right = false;
+    } else if (relative_pos == 'right') {
+      cell1.walls.right = false;
+      cell2.walls.left = false;
     }
   }
 
@@ -117,9 +131,8 @@ class Maze {
     }
   }
 
-  init_discoverers_cells() {
+  init_discoverer_cell() {
     this.discoverer_cell = this.cells[0];
-    this.stack = [];
   }
 
   has_walls(pos_from, pos_to) {

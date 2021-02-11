@@ -20,6 +20,9 @@ class Cell {
     this.walls = {top: true, bot: true, left: true, right: true};
     this.visited = false;
     this.is_pod_cell = false;
+    this.ancestral = null;
+    this.path_size = 0;
+    this.is_deadend = false;
   }
   
   where_is(other_cell) {
@@ -34,6 +37,10 @@ class Cell {
       return 'left';
     if (col_diff < 0)
       return 'right';
+  }
+
+  walls_count() {
+    return this.walls.top + this.walls.bot + this.walls.left + this.walls.right;
   }
 }
 
