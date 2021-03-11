@@ -17,7 +17,7 @@ class Maze {
     this.pod_end = {row: pod_end_row, col: pod_end_col};
 
     this.cells = [];
-    //this.deadend_cells = [];
+    this.deadend_cells = [];
     
     this.build_complete = false;
 
@@ -37,7 +37,7 @@ class Maze {
       this.build_complete = true;
       this.discoverer_cell.visited = true;
 
-      let next_cell = this.select_next_cell();
+      let next_cell = this.select_next_discoverer_cell();
       
       if (next_cell) {
         this.build_complete = false;
@@ -47,23 +47,22 @@ class Maze {
 
         // set new discoverer cell
         next_cell.path_size = this.discoverer_cell.path_size + 1;
-        next_cell.ancestral = this.discoverer_cell;
+        next_cell.ancestral_id = this.discoverer_cell.id;
 
         this.discoverer_cell = next_cell;
       } else {
         if (this.discoverer_cell.walls_count() == 3) {
           this.discoverer_cell.is_deadend = true;
-          //this.deadend_cells.push(this.discoverer_cell);
+          this.deadend_cells.push(this.discoverer_cell.id);
         }
 
-        this.discoverer_cell = this.discoverer_cell.ancestral;
+        let a_id = this.discoverer_cell.ancestral_id; 
+        this.discoverer_cell = this.cells[a_id];
 
         if (this.discoverer_cell)
           this.build_complete = false;
       }
     }
-
-    //console.log(this.deadend_cells.length);
   }
 
   break_wall(cell1, cell2) {
@@ -83,7 +82,7 @@ class Maze {
     }
   }
 
-  select_next_cell() {
+  select_next_discoverer_cell() {
     let current_cell = this.discoverer_cell;
 
     let my_top_cell   = this.get_cell(current_cell.row - 1, current_cell.col);
@@ -112,7 +111,8 @@ class Maze {
     /* Init all cells */
     for (let row = 0;row < this.rows;row++) {
       for (let col = 0;col < this.cols;col++) {
-        this.cells.push(new Cell(row, col));
+        let cell_id = row * this.cols + col;
+        this.cells.push(new Cell(cell_id, row, col));
       }
     }
 

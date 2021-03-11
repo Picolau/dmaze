@@ -75,6 +75,9 @@ class Maze {
       this.cells[idx].show();
       this.cells[idx].show_player_flag(this.player.color);
     }
+
+    // show player
+    this.player.show();
   }
 
   has_walls(pos_from, pos_to) {

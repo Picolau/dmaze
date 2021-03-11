@@ -26,7 +26,11 @@ server.listen(port, ()=> {
 
 io.on('connection', (socket) => {
     console.log('A user just connected.');
+    if (!first_connection) {
+        first_connection = true;
+    }
     
+
     socket.on('disconnect', () => {
         console.log('A user has disconnected.');
         /* TODO: PLAYER LOST CONNECTION */
@@ -55,13 +59,15 @@ io.on('connection', (socket) => {
     });
 });
 
-let rows = 60;
-let cols = 60;
+let rows = 40;
+let cols = 40;
 let mid_row = Math.floor(rows / 2);
 let mid_col = Math.floor(cols / 2);
 
 let maze = new Maze(rows, cols);
 let all_players = {};
+
+let first_connection = false;
 
 let spawn_pos_order = [
     {row: mid_row - 1, col: mid_col - 1},

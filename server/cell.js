@@ -14,13 +14,14 @@
 
 class Cell {
 
-  constructor(row, col) {
+  constructor(id, row, col) {
+    this.id = id;
     this.row = row;
     this.col = col;
     this.walls = {top: true, bot: true, left: true, right: true};
     this.visited = false;
     this.is_pod_cell = false;
-    this.ancestral = null;
+    this.ancestral_id = null;
     this.path_size = 0;
     this.is_deadend = false;
   }
