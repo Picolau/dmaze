@@ -24,12 +24,90 @@ class Maze {
     this.init_cells();
     this.init_discoverer_cell();
     this.build_maze();
+    this.break_deadends();
   }
 
   get_cell(row, col) {
     if (col >= 0 && col < this.cols && row >= 0 && row < this.rows)
       return this.cells[row*this.cols + col];
     return null;
+  }
+
+  update_broken_deadend_path_size(deadend_cell, chosen_cell) {
+    let cell = deadend_cell;
+    let update_cell = this.cells[cell.ancestral_id]
+
+    cell.is_deadend = false;
+    cell.path_size = chosen_cell.path_size + 1;
+    cell.ancestral_id = chosen_cell.id;
+
+    while (update_cell && cell.path_size > update_cell.path_size) {
+      let ancestral_update_cell = this.cells[ancestral_cell.ancestral_id];
+
+      update_cell.path_size = cell.path_size + 1;
+      update_cell.ancestral_id = cell.id;
+      cell = update_cell;
+      update_cell = ancestral_update_cell;
+    }
+  }
+
+  break_deadends() {
+    const MIN_PATH_SIZE_DIFF = Math.floor((this.cols + this.rows));
+    const MAX_PATH_SIZE_DIFF = Math.floor((this.cols * this.rows));
+    const MIN_PATH_SIZE_TO_EXIT = Math.floor((this.cols + this.rows)/4);
+    let total_broken = 0;
+
+    for (let i = 0;i < this.deadend_cells.length;i++) {
+      let id = this.deadend_cells[i];
+      let deadend_cell = this.cells[id];
+      let possible_cells = [];
+
+      let top_cell   = this.get_cell(deadend_cell.row - 1, deadend_cell.col);
+      let bot_cell   = this.get_cell(deadend_cell.row + 1, deadend_cell.col);
+      let left_cell  = this.get_cell(deadend_cell.row, deadend_cell.col - 1);
+      let right_cell = this.get_cell(deadend_cell.row, deadend_cell.col + 1);
+      
+      let path_size_diff;
+
+      if (top_cell && deadend_cell.walls.top) {
+        path_size_diff = deadend_cell.path_size - top_cell.path_size;
+        if (path_size_diff >= MIN_PATH_SIZE_DIFF && path_size_diff <= MAX_PATH_SIZE_DIFF && top_cell.path_size >= MIN_PATH_SIZE_TO_EXIT) {
+          possible_cells.push(top_cell);
+        }
+      }
+
+      if (bot_cell && deadend_cell.walls.bot) {
+        path_size_diff = deadend_cell.path_size - bot_cell.path_size;
+        if (path_size_diff >= MIN_PATH_SIZE_DIFF && path_size_diff <= MAX_PATH_SIZE_DIFF && bot_cell.path_size >= MIN_PATH_SIZE_TO_EXIT) {
+          possible_cells.push(bot_cell);
+        }
+      }
+
+      if (left_cell && deadend_cell.walls.left) {
+        path_size_diff = deadend_cell.path_size - left_cell.path_size;
+        if (path_size_diff >= MIN_PATH_SIZE_DIFF && path_size_diff <= MAX_PATH_SIZE_DIFF && left_cell.path_size >= MIN_PATH_SIZE_TO_EXIT) {
+          possible_cells.push(left_cell);
+        }
+      }
+
+      if (right_cell && deadend_cell.walls.right) {
+        path_size_diff = deadend_cell.path_size - right_cell.path_size;
+        if (path_size_diff >= MIN_PATH_SIZE_DIFF && path_size_diff <= MAX_PATH_SIZE_DIFF && right_cell.path_size >= MIN_PATH_SIZE_TO_EXIT) {
+          possible_cells.push(right_cell);
+        }
+      }
+
+      let chosen_cell = possible_cells[Math.floor(Math.random() * possible_cells.length)];
+      
+      if (chosen_cell) {
+        total_broken++;
+        
+        this.break_wall(deadend_cell, chosen_cell);
+        this.update_broken_deadend_path_size(deadend_cell, chosen_cell);
+      }
+    }
+
+    console.log(total_broken / this.deadend_cells.length);
   }
 
   build_maze() {

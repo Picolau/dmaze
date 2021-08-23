@@ -26,7 +26,7 @@ let initialized = false;
 let all_players = {};
 let my_socket;
 let translateVector;
-let maze_scale = 2;
+let maze_scale = 10;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -44,7 +44,6 @@ function setup() {
 
       maze = new Maze(server_maze.rows, server_maze.cols, my_player);
       maze.init_cells_from_server_cells(server_maze.cells);
-      maze.init_monsters_from_server_monsters(server_maze.monsters);
 
       translateVector = createVector(my_player.draw_pos.x,my_player.draw_pos.y);
 
@@ -63,11 +62,6 @@ function setup() {
       let client_player_to_move = all_players[id];
       client_player_to_move.update_pos(player_that_moved.pos);
     }
-  });
-
-  my_socket.on('client_move_monsters', (server_monsters) => {
-    //console.log(server_monsters);
-    maze.move_monsters(server_monsters);
   });
 }
 

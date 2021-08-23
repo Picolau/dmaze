@@ -59,8 +59,8 @@ io.on('connection', (socket) => {
     });
 });
 
-let rows = 40;
-let cols = 40;
+let rows = 60;
+let cols = 60;
 let mid_row = Math.floor(rows / 2);
 let mid_col = Math.floor(cols / 2);
 
